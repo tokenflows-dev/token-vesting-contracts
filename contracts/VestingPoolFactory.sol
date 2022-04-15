@@ -9,11 +9,13 @@ contract VestingPoolFactory is Ownable {
     address[] public vestingPools;
 
     function createPool(
+        string memory _name,
         address _token,
         uint256 _startTime,
         uint256 _vestingDuration
     ) external onlyOwner {
         VestingPeriod pool = new VestingPeriod(
+            _name,
             _token,
             _startTime,
             _vestingDuration

@@ -15,28 +15,29 @@ contract VestingPeriod is Ownable {
 
     /// @notice Grant definition
     struct Grant {
-        uint256 amount;             // Total amount to claim
-        uint256 totalClaimed;       // Already claimed
-        uint256 perSecond;          // Reward per second
+        uint256 amount; // Total amount to claim
+        uint256 totalClaimed; // Already claimed
+        uint256 perSecond; // Reward per second
     }
 
     struct Pool {
-        uint256 startTime;          // Starting time of the vesting period in unix timestamp format
-        uint256 endTime;            // Ending time of the vesting period in unix timestamp format
-        uint256 vestingDuration;    // In seconds
-        uint256 amount;             // Total size of pool
-        uint256 totalClaimed;       // Total amount claimed till moment
-        uint256 grants;             // Amount of investors
+        string name; // Name of the pool
+        uint256 startTime; // Starting time of the vesting period in unix timestamp format
+        uint256 endTime; // Ending time of the vesting period in unix timestamp format
+        uint256 vestingDuration; // In seconds
+        uint256 amount; // Total size of pool
+        uint256 totalClaimed; // Total amount claimed till moment
+        uint256 grants; // Amount of investors
     }
 
     /// @dev Used to translate vesting periods specified in days to seconds
-    uint256 constant internal SECONDS_PER_DAY = 86400;
+    uint256 internal constant SECONDS_PER_DAY = 86400;
 
     /// @notice ERC20 token
     IERC20 public token;
 
     /// @notice Mapping of recipient address > token grant
-    mapping (address => Grant) public tokenGrants;
+    mapping(address => Grant) public tokenGrants;
 
     /// @notice Current vesting period is the same for all grants.
     /// @dev Each pool has its own contract.
@@ -50,7 +51,10 @@ contract VestingPeriod is Ownable {
     event GrantAdded(address indexed recipient, uint256 indexed amount);
 
     /// @notice Event emitted when tokens are claimed by a recipient from a grant
-    event GrantTokensClaimed(address indexed recipient, uint256 indexed amountClaimed);
+    event GrantTokensClaimed(
+        address indexed recipient,
+        uint256 indexed amountClaimed
+    );
 
     /// @notice Event emitted when the grant investor is changed
     event ChangeInvestor(address indexed oldOwner, address indexed newOwner);
@@ -61,17 +65,38 @@ contract VestingPeriod is Ownable {
      * @param _startTime starting time of the vesting period in timestamp format
      * @param _vestingDuration duration time of the vesting period in timestamp format
      */
-    constructor(address _token, uint256 _startTime, uint256 _vestingDuration) {
-        require(_token != address(0), "VestingPeriod::constructor: _token must be valid token address");
-        require(_startTime > 0 && _vestingDuration > 0, "VestingPeriod::constructor: One of the time parameters is 0");
-        require(_startTime > block.timestamp, "VestingPeriod::constructor: Starting time shalll be in a future time");
-        require(_vestingDuration > 0, "VestingPeriod::constructor: Duration of the period must be > 0");
+    constructor(
+        string memory _name,
+        address _token,
+        uint256 _startTime,
+        uint256 _vestingDuration
+    ) {
+        require(
+            _token != address(0),
+            "VestingPeriod::constructor: _token must be valid token address"
+        );
+        require(
+            _startTime > 0 && _vestingDuration > 0,
+            "VestingPeriod::constructor: One of the time parameters is 0"
+        );
+        require(
+            _startTime > block.timestamp,
+            "VestingPeriod::constructor: Starting time shalll be in a future time"
+        );
+        require(
+            _vestingDuration > 0,
+            "VestingPeriod::constructor: Duration of the period must be > 0"
+        );
         if (_vestingDuration < SECONDS_PER_DAY) {
-            require(_vestingDuration <= SECONDS_PER_DAY.mul(10).mul(365), "VestingPeriod::constructor: Duration should be less than 10 years");
+            require(
+                _vestingDuration <= SECONDS_PER_DAY.mul(10).mul(365),
+                "VestingPeriod::constructor: Duration should be less than 10 years"
+            );
         }
 
         token = IERC20(_token);
 
+        pool.name = _name;
         pool.startTime = _startTime;
         pool.vestingDuration = _vestingDuration;
         pool.endTime = _startTime.add(_vestingDuration);
@@ -82,13 +107,32 @@ contract VestingPeriod is Ownable {
      * @param _oldAddress existing address from the investor which we want to change
      * @param _newAddress new address from the investor which we want to give
      */
-    function changeInvestor(address _oldAddress, address _newAddress) external onlyOwner {
-        require(blacklist[_oldAddress] == address(0), "VestingPeriod::changeInvestor: oldaddress already in the blacklist");
-        require(blacklist[_newAddress] == address(0), "VestingPeriod::changeInvestor: new address is a blacklisted address");
-        require(tokenGrants[_newAddress].amount == 0, "VestingPeriod::changeInvestor: requires a different address than existing granted");
-        require(tokenGrants[_oldAddress].amount > 0, "VestingPeriod::changeInvestor: oldAddress has no remaining balance");
+    function changeInvestor(address _oldAddress, address _newAddress)
+        external
+        onlyOwner
+    {
+        require(
+            blacklist[_oldAddress] == address(0),
+            "VestingPeriod::changeInvestor: oldaddress already in the blacklist"
+        );
+        require(
+            blacklist[_newAddress] == address(0),
+            "VestingPeriod::changeInvestor: new address is a blacklisted address"
+        );
+        require(
+            tokenGrants[_newAddress].amount == 0,
+            "VestingPeriod::changeInvestor: requires a different address than existing granted"
+        );
+        require(
+            tokenGrants[_oldAddress].amount > 0,
+            "VestingPeriod::changeInvestor: oldAddress has no remaining balance"
+        );
 
-        tokenGrants[_newAddress] = Grant(tokenGrants[_oldAddress].amount, tokenGrants[_oldAddress].totalClaimed, tokenGrants[_oldAddress].perSecond);
+        tokenGrants[_newAddress] = Grant(
+            tokenGrants[_oldAddress].amount,
+            tokenGrants[_oldAddress].totalClaimed,
+            tokenGrants[_oldAddress].perSecond
+        );
         delete tokenGrants[_oldAddress];
 
         blacklist[_oldAddress] = _newAddress;
@@ -101,26 +145,52 @@ contract VestingPeriod is Ownable {
      * @param _recipients list of addresses of the stakeholders
      * @param _amounts list of amounts to be assigned to the stakeholders
      */
-    function addTokenGrants(address[] memory _recipients, uint256[] memory _amounts) external onlyOwner {
-        require(_recipients.length > 0, "VestingPeriod::addTokenGrants: no recipients");
-        require(_recipients.length <= 100, "VestingPeriod::addTokenGrants: too many grants, it will probably fail");
-        require(_recipients.length == _amounts.length, "VestingPeriod::addTokenGrants: invalid parameters length (they should be same)");
+    function addTokenGrants(
+        address[] memory _recipients,
+        uint256[] memory _amounts
+    ) external onlyOwner {
+        require(
+            _recipients.length > 0,
+            "VestingPeriod::addTokenGrants: no recipients"
+        );
+        require(
+            _recipients.length <= 100,
+            "VestingPeriod::addTokenGrants: too many grants, it will probably fail"
+        );
+        require(
+            _recipients.length == _amounts.length,
+            "VestingPeriod::addTokenGrants: invalid parameters length (they should be same)"
+        );
 
         uint256 amountSum = 0;
         for (uint16 i = 0; i < _recipients.length; i++) {
-            require(_recipients[i] != address(0), "VestingPeriod:addTokenGrants: there is an address with value 0");
-            require(tokenGrants[_recipients[i]].amount == 0, "VestingPeriod::addTokenGrants: a grant already exists for one of the accounts");
-            require(blacklist[_recipients[i]] == address(0), "VestingPeriod:addTOkenGrants: Blacklisted address");
+            require(
+                _recipients[i] != address(0),
+                "VestingPeriod:addTokenGrants: there is an address with value 0"
+            );
+            require(
+                tokenGrants[_recipients[i]].amount == 0,
+                "VestingPeriod::addTokenGrants: a grant already exists for one of the accounts"
+            );
+            require(
+                blacklist[_recipients[i]] == address(0),
+                "VestingPeriod:addTOkenGrants: Blacklisted address"
+            );
 
-            require(_amounts[i] > 0, "VestingPeriod::addTokenGrant: amount == 0");
+            require(
+                _amounts[i] > 0,
+                "VestingPeriod::addTokenGrant: amount == 0"
+            );
             amountSum = amountSum.add(_amounts[i]);
         }
 
         // Transfer the grant tokens under the control of the vesting contract
-        require(token.transferFrom(msg.sender, address(this), amountSum), "VestingPeriod::addTokenGrants: transfer failed");
+        require(
+            token.transferFrom(msg.sender, address(this), amountSum),
+            "VestingPeriod::addTokenGrants: transfer failed"
+        );
 
         for (uint16 i = 0; i < _recipients.length; i++) {
-
             Grant memory grant = Grant({
                 amount: _amounts[i],
                 totalClaimed: 0,
@@ -138,7 +208,11 @@ contract VestingPeriod is Ownable {
      * @param _recipient The address that has a grant
      * @return the grant
      */
-    function getTokenGrant(address _recipient) external view returns (Grant memory) {
+    function getTokenGrant(address _recipient)
+        external
+        view
+        returns (Grant memory)
+    {
         return tokenGrants[_recipient];
     }
 
@@ -148,8 +222,11 @@ contract VestingPeriod is Ownable {
      * @param _recipient The address that has a grant
      * @return The amount recipient can claim
      */
-    function calculateGrantClaim(address _recipient) public view returns (uint256) {
-
+    function calculateGrantClaim(address _recipient)
+        public
+        view
+        returns (uint256)
+    {
         // For grants created with a future start date, that hasn't been reached, return 0, 0
         if (block.timestamp < pool.startTime) {
             return 0;
@@ -163,11 +240,17 @@ contract VestingPeriod is Ownable {
 
         // If over vesting duration, all tokens vested
         if (elapsedTime >= pool.vestingDuration) {
-            uint256 remainingGrant = tokenGrants[_recipient].amount.sub(tokenGrants[_recipient].totalClaimed);
+            uint256 remainingGrant = tokenGrants[_recipient].amount.sub(
+                tokenGrants[_recipient].totalClaimed
+            );
             return remainingGrant;
         } else {
-            uint256 amountVested = tokenGrants[_recipient].perSecond.mul(elapsedTime);
-            uint256 claimableAmount = amountVested.sub(tokenGrants[_recipient].totalClaimed);
+            uint256 amountVested = tokenGrants[_recipient].perSecond.mul(
+                elapsedTime
+            );
+            uint256 claimableAmount = amountVested.sub(
+                tokenGrants[_recipient].totalClaimed
+            );
             return claimableAmount;
         }
     }
@@ -178,7 +261,6 @@ contract VestingPeriod is Ownable {
      * @return Total vested balance (claimed + unclaimed)
      */
     function vestedBalance(address _recipient) external view returns (uint256) {
-
         // For grants created with a future start date, that hasn't been reached, return 0, 0
         if (block.timestamp < pool.startTime) {
             return 0;
@@ -194,7 +276,9 @@ contract VestingPeriod is Ownable {
             return tokenGrants[_recipient].amount;
         } else {
             uint256 elapsedTime = cap.sub(pool.startTime);
-            uint256 amountVested = tokenGrants[_recipient].perSecond.mul(elapsedTime);
+            uint256 amountVested = tokenGrants[_recipient].perSecond.mul(
+                elapsedTime
+            );
             return amountVested;
         }
     }
@@ -204,8 +288,11 @@ contract VestingPeriod is Ownable {
      * @param _recipient The address that has a grant
      * @return the number of claimed tokens by `recipient`
      */
-    function claimedBalance(address _recipient) external view returns (uint256) {
-
+    function claimedBalance(address _recipient)
+        external
+        view
+        returns (uint256)
+    {
         return tokenGrants[_recipient].totalClaimed;
     }
 
@@ -217,12 +304,20 @@ contract VestingPeriod is Ownable {
      */
     function claimVestedTokens(address _recipient) external {
         uint256 amountVested = calculateGrantClaim(_recipient);
-        require(amountVested > 0, "VestingPeriod::claimVestedTokens: amountVested is 0");
-        require(token.transfer(_recipient, amountVested), "VestingPeriod::claimVestedTokens: transfer failed");
+        require(
+            amountVested > 0,
+            "VestingPeriod::claimVestedTokens: amountVested is 0"
+        );
+        require(
+            token.transfer(_recipient, amountVested),
+            "VestingPeriod::claimVestedTokens: transfer failed"
+        );
 
         Grant storage tokenGrant = tokenGrants[_recipient];
 
-        tokenGrant.totalClaimed = uint256(tokenGrant.totalClaimed.add(amountVested));
+        tokenGrant.totalClaimed = uint256(
+            tokenGrant.totalClaimed.add(amountVested)
+        );
         pool.totalClaimed = pool.totalClaimed.add(amountVested);
 
         emit GrantTokensClaimed(_recipient, amountVested);
@@ -233,9 +328,15 @@ contract VestingPeriod is Ownable {
      * @param _recipient The address that has a grant
      * @return Number of tokens that will vest per day
      */
-    function tokensVestedPerDay(address _recipient) external view returns(uint256) {
-
-        return tokenGrants[_recipient].amount.div(pool.vestingDuration.div(SECONDS_PER_DAY));
+    function tokensVestedPerDay(address _recipient)
+        external
+        view
+        returns (uint256)
+    {
+        return
+            tokenGrants[_recipient].amount.div(
+                pool.vestingDuration.div(SECONDS_PER_DAY)
+            );
     }
 
     /**
@@ -243,8 +344,11 @@ contract VestingPeriod is Ownable {
      * @param _amount the amount to be checked
      * @return Number of tokens that will vest per day
      */
-    function tokensVestedPerDay(uint256 _amount) external view returns(uint256) {
-
+    function tokensVestedPerDay(uint256 _amount)
+        external
+        view
+        returns (uint256)
+    {
         return _amount.div(pool.vestingDuration.div(SECONDS_PER_DAY));
     }
 }
