@@ -2,6 +2,7 @@
 pragma solidity ^0.8.0;
 
 import "./Vesting.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract VestingPoolFactory is Ownable {
     using SafeMath for uint256;
@@ -18,10 +19,9 @@ contract VestingPoolFactory is Ownable {
             _name,
             _token,
             _startTime,
-            _vestingDuration
+            _vestingDuration,
+            msg.sender
         );
-
-        pool.transferOwnership(msg.sender);
         vestingPools.push(address(pool));
     }
 

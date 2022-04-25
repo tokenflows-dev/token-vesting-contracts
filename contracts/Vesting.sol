@@ -3,14 +3,14 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/access/AccessControl.sol";
 
 /**
  * @title VestingPeriod
  * @dev The vesting vault contract after the token sale
  * Taken from https://github.com/dandelionlabs-io/linear-vesting-contracts/blob/master/contracts/Vesting.sol
  */
-contract VestingPeriod is Ownable {
+contract VestingPeriod is AccessControl {
     using SafeMath for uint256;
 
     /// @notice Grant definition
@@ -43,6 +43,9 @@ contract VestingPeriod is Ownable {
     /// @dev Each pool has its own contract.
     Pool public pool;
 
+    bytes32 public constant OPERATORS = keccak256("OPERATORS");
+    bytes32 public constant OPERATORS_ADMIN = keccak256("OPERATORS_ADMIN");
+
     /// @notice List of investors who got blacklist tokens.
     /// @dev Structure of the map: investor => new address
     mapping(address => address) public blacklist;
@@ -69,7 +72,8 @@ contract VestingPeriod is Ownable {
         string memory _name,
         address _token,
         uint256 _startTime,
-        uint256 _vestingDuration
+        uint256 _vestingDuration,
+        address _admin
     ) {
         require(
             _token != address(0),
@@ -100,6 +104,10 @@ contract VestingPeriod is Ownable {
         pool.startTime = _startTime;
         pool.vestingDuration = _vestingDuration;
         pool.endTime = _startTime.add(_vestingDuration);
+
+        _setRoleAdmin(OPERATORS, OPERATORS_ADMIN);
+        _setupRole(OPERATORS_ADMIN, _admin);
+        _setupRole(OPERATORS, _admin);
     }
 
     /**
@@ -109,7 +117,7 @@ contract VestingPeriod is Ownable {
      */
     function changeInvestor(address _oldAddress, address _newAddress)
         external
-        onlyOwner
+        onlyRole(OPERATORS)
     {
         require(
             blacklist[_oldAddress] == address(0),
@@ -148,7 +156,7 @@ contract VestingPeriod is Ownable {
     function addTokenGrants(
         address[] memory _recipients,
         uint256[] memory _amounts
-    ) external onlyOwner {
+    ) external onlyRole(OPERATORS) {
         require(
             _recipients.length > 0,
             "VestingPeriod::addTokenGrants: no recipients"
