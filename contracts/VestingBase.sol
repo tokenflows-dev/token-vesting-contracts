@@ -10,7 +10,7 @@ import "@openzeppelin/contracts/access/AccessControl.sol";
  * @dev The vesting vault contract after the token sale
  * Taken from https://github.com/dandelionlabs-io/linear-vesting-contracts/blob/master/contracts/Vesting.sol
  */
-contract VestingPeriod is AccessControl {
+contract VestingBase is AccessControl {
     using SafeMath for uint256;
 
     /// @notice Grant definition
@@ -46,10 +46,6 @@ contract VestingPeriod is AccessControl {
     bytes32 public constant OPERATORS = keccak256("OPERATORS");
     bytes32 public constant OPERATORS_ADMIN = keccak256("OPERATORS_ADMIN");
 
-    /// @notice List of investors who got blacklist tokens.
-    /// @dev Structure of the map: investor => new address
-    mapping(address => address) public blacklist;
-
     /// @notice Event emitted when a new grant is created
     event GrantAdded(address indexed recipient, uint256 indexed amount);
 
@@ -58,9 +54,6 @@ contract VestingPeriod is AccessControl {
         address indexed recipient,
         uint256 indexed amountClaimed
     );
-
-    /// @notice Event emitted when the grant investor is changed
-    event ChangeInvestor(address indexed oldOwner, address indexed newOwner);
 
     /**
      * @notice Construct a new Vesting contract
@@ -111,44 +104,6 @@ contract VestingPeriod is AccessControl {
     }
 
     /**
-     * @notice In case if the user doesn't want to change the grant.
-     * @param _oldAddress existing address from the investor which we want to change
-     * @param _newAddress new address from the investor which we want to give
-     */
-    function changeInvestor(address _oldAddress, address _newAddress)
-        external
-        onlyRole(OPERATORS)
-    {
-        require(
-            blacklist[_oldAddress] == address(0),
-            "VestingPeriod::changeInvestor: oldaddress already in the blacklist"
-        );
-        require(
-            blacklist[_newAddress] == address(0),
-            "VestingPeriod::changeInvestor: new address is a blacklisted address"
-        );
-        require(
-            tokenGrants[_newAddress].amount == 0,
-            "VestingPeriod::changeInvestor: requires a different address than existing granted"
-        );
-        require(
-            tokenGrants[_oldAddress].amount > 0,
-            "VestingPeriod::changeInvestor: oldAddress has no remaining balance"
-        );
-
-        tokenGrants[_newAddress] = Grant(
-            tokenGrants[_oldAddress].amount,
-            tokenGrants[_oldAddress].totalClaimed,
-            tokenGrants[_oldAddress].perSecond
-        );
-        delete tokenGrants[_oldAddress];
-
-        blacklist[_oldAddress] = _newAddress;
-
-        emit ChangeInvestor(_oldAddress, _newAddress);
-    }
-
-    /**
      * @notice Add list of grants in batch.
      * @param _recipients list of addresses of the stakeholders
      * @param _amounts list of amounts to be assigned to the stakeholders
@@ -156,7 +111,7 @@ contract VestingPeriod is AccessControl {
     function addTokenGrants(
         address[] memory _recipients,
         uint256[] memory _amounts
-    ) external onlyRole(OPERATORS) {
+    ) public virtual onlyRole(OPERATORS) {
         require(
             _recipients.length > 0,
             "VestingPeriod::addTokenGrants: no recipients"
@@ -180,11 +135,6 @@ contract VestingPeriod is AccessControl {
                 tokenGrants[_recipients[i]].amount == 0,
                 "VestingPeriod::addTokenGrants: a grant already exists for one of the accounts"
             );
-            require(
-                blacklist[_recipients[i]] == address(0),
-                "VestingPeriod:addTOkenGrants: Blacklisted address"
-            );
-
             require(
                 _amounts[i] > 0,
                 "VestingPeriod::addTokenGrant: amount == 0"
