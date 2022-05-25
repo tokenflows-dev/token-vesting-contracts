@@ -99,6 +99,7 @@ contract VestingBase is AccessControl {
         pool.endTime = _startTime.add(_vestingDuration);
 
         _setRoleAdmin(OPERATORS, OPERATORS_ADMIN);
+        _setRoleAdmin(OPERATORS_ADMIN, OPERATORS_ADMIN);
         _setupRole(OPERATORS_ADMIN, _admin);
         _setupRole(OPERATORS, _admin);
     }
@@ -258,27 +259,26 @@ contract VestingBase is AccessControl {
      * @notice Allows a grant recipient to claim their vested tokens
      * @dev Errors if no tokens have vested
      * @dev It is advised recipients check they are entitled to claim via `calculateGrantClaim` before calling this
-     * @param _recipient The address that has a grant
      */
-    function claimVestedTokens(address _recipient) external {
-        uint256 amountVested = calculateGrantClaim(_recipient);
+    function claimVestedTokens() external {
+        uint256 amountVested = calculateGrantClaim(msg.sender);
         require(
             amountVested > 0,
             "VestingPeriod::claimVestedTokens: amountVested is 0"
         );
         require(
-            token.transfer(_recipient, amountVested),
+            token.transfer(msg.sender, amountVested),
             "VestingPeriod::claimVestedTokens: transfer failed"
         );
 
-        Grant storage tokenGrant = tokenGrants[_recipient];
+        Grant storage tokenGrant = tokenGrants[msg.sender];
 
         tokenGrant.totalClaimed = uint256(
             tokenGrant.totalClaimed.add(amountVested)
         );
         pool.totalClaimed = pool.totalClaimed.add(amountVested);
 
-        emit GrantTokensClaimed(_recipient, amountVested);
+        emit GrantTokensClaimed(msg.sender, amountVested);
     }
 
     /**
@@ -308,5 +308,10 @@ contract VestingBase is AccessControl {
         returns (uint256)
     {
         return _amount.div(pool.vestingDuration.div(SECONDS_PER_DAY));
+    }
+
+    function changeAdmin(address _newAdmin) external onlyRole(OPERATORS_ADMIN) {
+        grantRole(OPERATORS_ADMIN, _newAdmin);
+        revokeRole(OPERATORS_ADMIN, msg.sender);
     }
 }
