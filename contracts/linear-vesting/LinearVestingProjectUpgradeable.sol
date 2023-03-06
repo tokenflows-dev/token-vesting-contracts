@@ -4,51 +4,18 @@ pragma solidity ^0.8.4;
 import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
 import "../access/ManageableUpgradeable.sol";
+import "./ILinearVestingProjectUpgradeable.sol";
 
 /**
  * @title LinearVestingProjectUpgradeable
  * @dev Linear Vesting project for linear vesting grants distribution.
  * Taken from https://github.com/dandelionlabs-io/linear-vesting-contracts/blob/master/contracts/LinearVestingProjectUpgradeable.sol
  */
-contract LinearVestingProjectUpgradeable is ManageableUpgradeable {
+contract LinearVestingProjectUpgradeable is ManageableUpgradeable, ILinearVestingProjectUpgradeable {
     using SafeMathUpgradeable for uint;
-
-    bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR");
-    bytes32 public constant ADMIN_ROLE = keccak256("ADMIN");
 
     /// @dev Used to translate vesting periods specified in days to seconds
     uint internal constant SECONDS_PER_DAY = 86400;
-
-    /// @notice Pool definition
-    struct Pool {
-        string name; // Name of the pool
-        uint startTime; // Starting time of the vesting period in unix timestamp format
-        uint endTime; // Ending time of the vesting period in unix timestamp format
-        uint vestingDuration; // In seconds
-        uint amount; // Total size of pool
-        uint totalClaimed; // Total amount claimed till moment
-        uint grants; // Amount of stakeholders
-    }
-
-    /// @notice Grant definition
-    struct Grant {
-        uint amount; // Total amount to claim
-        uint totalClaimed; // Already claimed
-        uint perSecond; // Reward per second
-    }
-
-    /// @notice Event emitted when a new pool is created
-    event PoolAdded(uint indexed poolIndex);
-
-    /// @notice Event emitted when a new grant is created
-    event GrantAdded(uint indexed poolIndex, address indexed recipient, uint256 indexed amount);
-
-    /// @notice Event emitted when tokens are claimed by a recipient from a grant
-    event GrantClaimed(
-        uint indexed poolIndex,
-        address indexed recipient,
-        uint indexed amountClaimed
-    );
 
     /// @notice ERC20 token
     IERC20Upgradeable public token;
@@ -74,7 +41,6 @@ contract LinearVestingProjectUpgradeable is ManageableUpgradeable {
         token = IERC20Upgradeable(_token);
     }
 
-
     /**
      * @notice Creates a new pool
      * @param _startTime starting time of the vesting period in timestamp format
@@ -84,7 +50,7 @@ contract LinearVestingProjectUpgradeable is ManageableUpgradeable {
         string memory _name,
         uint256 _startTime,
         uint256 _vestingDuration
-    ) public onlyManager {
+    ) public override onlyManager {
         require(
             _startTime > 0 && _vestingDuration > 0,
             "LinearVestingProject::createPool: One of the time parameters is 0"
@@ -126,7 +92,7 @@ contract LinearVestingProjectUpgradeable is ManageableUpgradeable {
         uint _poolIndex,
         address[] memory _recipients,
         uint256[] memory _amounts
-    ) public virtual onlyManager {
+    ) public virtual override onlyManager {
         require(
             _recipients.length > 0,
             "LinearVestingProject::addTokenGrants: no recipients"
@@ -189,11 +155,7 @@ contract LinearVestingProjectUpgradeable is ManageableUpgradeable {
      * @param _recipient The address that has a grant
      * @return the grant
      */
-    function getTokenGrant(uint _poolIndex, address _recipient)
-        external
-        view
-        returns (Grant memory)
-    {
+    function getTokenGrant(uint _poolIndex, address _recipient) external view override returns (Grant memory) {
         return grants[_poolIndex][_recipient];
     }
 
@@ -203,11 +165,7 @@ contract LinearVestingProjectUpgradeable is ManageableUpgradeable {
      * @param _recipient The address that has a grant
      * @return The amount recipient can claim
      */
-    function calculateGrantClaim(uint _poolIndex, address _recipient)
-        public
-        view
-        returns (uint256)
-    {
+    function calculateGrantClaim(uint _poolIndex, address _recipient) public view override returns (uint256) {
         require(
             _poolIndex < pools.length,
             "LinearVestingProject::calculateGrantClaim: invalid pool index"
@@ -246,7 +204,7 @@ contract LinearVestingProjectUpgradeable is ManageableUpgradeable {
      * @param _recipient The address that has a grant
      * @return Total vested balance (claimed + unclaimed)
      */
-    function vestedBalance(uint _poolIndex, address _recipient) external view returns (uint256) {
+    function vestedBalance(uint _poolIndex, address _recipient) external view override returns (uint256) {
         require(
             _poolIndex < pools.length,
             "LinearVestingProject::calculateGrantClaim: invalid pool index"
@@ -280,11 +238,7 @@ contract LinearVestingProjectUpgradeable is ManageableUpgradeable {
      * @param _recipient The address that has a grant
      * @return the number of claimed tokens by `recipient`
      */
-    function claimedBalance(uint _poolIndex, address _recipient)
-        external
-        view
-        returns (uint256)
-    {
+    function claimedBalance(uint _poolIndex, address _recipient) external view override returns (uint256) {
         return grants[_poolIndex][_recipient].totalClaimed;
     }
 
@@ -293,7 +247,7 @@ contract LinearVestingProjectUpgradeable is ManageableUpgradeable {
      * @dev Errors if no tokens have vested
      * @dev It is advised recipients check they are entitled to claim via `calculateGrantClaim` before calling this
      */
-    function claimVestedTokens(uint _poolIndex) external {
+    function claimVestedTokens(uint _poolIndex) external override {
         require(
             _poolIndex < pools.length,
             "LinearVestingProject::calculateGrantClaim: invalid pool index"
@@ -325,11 +279,7 @@ contract LinearVestingProjectUpgradeable is ManageableUpgradeable {
      * @param _recipient The address that has a grant
      * @return Number of tokens that will vest per day
      */
-    function tokensVestedPerDay(uint _poolIndex, address _recipient)
-        external
-        view
-        returns (uint256)
-    {
+    function tokensVestedPerDay(uint _poolIndex, address _recipient) external view override returns (uint256){
         return calculatePoolVesting(_poolIndex, grants[_poolIndex][_recipient].amount);
     }
 
@@ -338,11 +288,7 @@ contract LinearVestingProjectUpgradeable is ManageableUpgradeable {
      * @param _amount the amount to be checked
      * @return Number of tokens that will vest per day
      */
-    function calculatePoolVesting(uint _poolIndex, uint256 _amount)
-        external
-        view
-        returns (uint256)
-    {
+    function calculatePoolVesting(uint _poolIndex, uint256 _amount) public view override returns (uint256) {
         require(
             _poolIndex < pools.length,
             "LinearVestingProject::calculateGrantClaim: invalid pool index"

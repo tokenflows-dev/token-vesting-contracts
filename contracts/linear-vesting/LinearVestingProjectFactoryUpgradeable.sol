@@ -3,7 +3,6 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts/proxy/beacon/BeaconProxy.sol";
-import "@openzeppelin/contracts/utils/introspection/IERC165Upgradeable.sol";
 
 import "./LinearVestingProjectUpgradeable.sol";
 import "./LinearVestingProjectBeacon.sol";
@@ -63,7 +62,7 @@ contract LinearVestingProjectFactoryUpgradeable is OwnableUpgradeable {
         return address(beacon);
     }
 
-    function getProjectAddress(uint projectIndex) external view returns (address[] memory) {
+    function getProjectAddress(uint projectIndex) external view returns (address) {
         return projects[projectIndex];
     }
 
