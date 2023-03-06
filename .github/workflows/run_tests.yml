@@ -1,0 +1,25 @@
+name: Check tests routine
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install packages
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16.x'
+      - run: yarn --ignore-scripts
+        shell: bash
+      - name: Create local node and deploy
+        run: |
+          yarn hardhat node &
+          yarn hardhat run scripts/deploy.ts --network localhost
+      - name: Run Tests
+        run: yarn hardhat test
