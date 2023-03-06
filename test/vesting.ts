@@ -1,3 +1,4 @@
+import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import { ethers } from "hardhat";
 import { expect } from "chai";
 
@@ -7,11 +8,14 @@ let startTime;
 let secondOffset = 2;
 let vestingDuration;
 
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
 describe("Vesting", function () {
+
+  let factory, owner, user;
+
+  beforeEach(async () => {
+    ({factory, owner, user } = await loadFixture(deployFactory));
+  });
+
   it("addVestingPeriod", async function () {
     const [owner, addr1] = await ethers.getSigners();
 
@@ -71,8 +75,6 @@ describe("Vesting", function () {
 
   it("calculateGrantClaim", async function () {
     const [owner, addr1] = await ethers.getSigners();
-
-    await sleep((secondOffset + 3) * 1000);
 
     let now = await vesting.getNow();
     let passedSeconds = now - (startTime);
