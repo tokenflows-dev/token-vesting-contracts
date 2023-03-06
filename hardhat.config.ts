@@ -12,12 +12,12 @@ const config: HardhatUserConfig = {
     },
     goerli: {
       network: 5,
-      url: process.env.RPC_URL,
+      url: process.env.RPC_URL || '',
       accounts: process.env.DEPLOYER_KEY ? [process.env.DEPLOYER_KEY] : []
     },
     mainnet: {
       network: 1,
-      url: process.env.RPC_URL,
+      url: process.env.RPC_URL || '',
       accounts: process.env.DEPLOYER_KEY ? [process.env.DEPLOYER_KEY] : []
     }
   },
