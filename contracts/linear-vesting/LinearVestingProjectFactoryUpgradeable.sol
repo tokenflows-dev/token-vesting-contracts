@@ -3,6 +3,7 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts/proxy/beacon/BeaconProxy.sol";
+import "@openzeppelin/contracts/utils/introspection/IERC165Upgradeable.sol";
 
 import "./LinearVestingProjectUpgradeable.sol";
 import "./LinearVestingProjectBeacon.sol";
@@ -34,7 +35,6 @@ contract LinearVestingProjectFactoryUpgradeable is OwnableUpgradeable {
     function createProject(
         address _token
     ) external onlyOwner returns (address) {
-    // todo validate if _token supports interface for ERC20
         BeaconProxy project = new BeaconProxy(
             address(beacon),
             abi.encodeWithSelector(
@@ -55,7 +55,21 @@ contract LinearVestingProjectFactoryUpgradeable is OwnableUpgradeable {
         return newProjectAddress;
     }
 
+    function getImplementation() public view returns (address) {
+        return beacon.implementation();
+    }
+
+    function getBeacon() public view returns (address) {
+        return address(beacon);
+    }
+
+    function getProjectAddress(uint projectIndex) external view returns (address[] memory) {
+        return projects[projectIndex];
+    }
+
     function getProjects() external view returns (address[] memory) {
         return projects;
     }
+
+    uint256[50] private __gap;
 }

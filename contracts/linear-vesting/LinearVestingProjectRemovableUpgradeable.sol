@@ -6,27 +6,27 @@ import "./LinearVestingProjectUpgradeable.sol";
 abstract contract LinearVestingProjectRemovableUpgradeable is LinearVestingProjectUpgradeable {
 
     /// @notice Event emitted when the grant stakeholder is deleted
-    event GrantRemoved(address indexed);
+    event GrantRemoved(uint indexed poolIndex, address indexed stakeHolderAddress);
 
     /**
      * @notice Deletes a grant from a pool by Id, refunds the remaining tokens from a grant.
      * @param _address existing address from the investor which we want to delete
      */
     function removeGrant(uint _poolIndex, address _address) external onlyManager {
+        Grant memory grant = grants[_poolIndex][_address];
         require(
-            grants[_poolIndex][_address].amount > 0,
+            grant.amount > 0,
             "LinearVestingProjectRemovable::removeGrant: grant not active"
         );
 
-        uint256 refund = grants[_poolIndex][_address].amount -
-            grants[_poolIndex][_address].totalClaimed;
-        delete grants[_poolIndex][_address];
+        uint256 refund = grant.amount - grant.totalClaimed;
+        delete grant;
 
         require(
             token.transferFrom(address(this), msg.sender, refund),
             "LinearVestingProjectRemovable::removeGrant: transfer failed"
         );
 
-        emit GrantRemoved(_address);
+        emit GrantRemoved(_poolIndex, _address);
     }
 }

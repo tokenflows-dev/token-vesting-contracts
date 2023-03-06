@@ -330,15 +330,7 @@ contract LinearVestingProjectUpgradeable is ManageableUpgradeable {
         view
         returns (uint256)
     {
-        require(
-            _poolIndex < pools.length,
-            "LinearVestingProject::calculateGrantClaim: invalid pool index"
-        );
-        Pool memory pool = pools[_poolIndex];
-        return
-            grants[_poolIndex][_recipient].amount.div(
-                pool.vestingDuration.div(SECONDS_PER_DAY)
-            );
+        return calculatePoolVesting(_poolIndex, grants[_poolIndex][_recipient].amount);
     }
 
     /**
@@ -358,4 +350,6 @@ contract LinearVestingProjectUpgradeable is ManageableUpgradeable {
         Pool memory pool = pools[_poolIndex];
         return _amount.div(pool.vestingDuration.div(SECONDS_PER_DAY));
     }
+
+    uint256[50] private __gap;
 }
