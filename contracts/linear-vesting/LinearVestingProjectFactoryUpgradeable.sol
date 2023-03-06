@@ -34,7 +34,7 @@ contract LinearVestingProjectFactoryUpgradeable is OwnableUpgradeable {
     function createProject(
         address _token
     ) external onlyOwner returns (address) {
-
+    // todo validate if _token supports interface for ERC20
         BeaconProxy project = new BeaconProxy(
             address(beacon),
             abi.encodeWithSelector(

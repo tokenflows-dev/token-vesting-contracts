@@ -13,7 +13,7 @@ describe("Grants management", function () {
   describe("Adding new grants", function () {
 
     it("add new grants by a manager should succeed", async function () {
-
+      // todo check emitted events if many
     });
 
     it("no grantees should fail", async function () {
@@ -35,7 +35,7 @@ describe("Grants management", function () {
 
   describe("Remove existing grants", function () {
     it("remove existing grants by a manager should succeed", async function () {
-
+      // todo check emitted event
     });
 
     it("invalid grant or without funds available should fail", async function () {
