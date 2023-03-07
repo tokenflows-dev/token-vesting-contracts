@@ -14,7 +14,7 @@ contract ManageableUpgradeable is OwnableUpgradeable {
     event ManagerChanged(address indexed manager, bool indexed isActive);
 
     function __ManageableUpgradeable_init() public initializer {
-        transferOwnership(tx.origin);
+        _transferOwnership(tx.origin);
         _addManager(tx.origin);
     }
 

@@ -15,6 +15,11 @@ const config: HardhatUserConfig = {
       url: process.env.RPC_URL || '',
       accounts: process.env.DEPLOYER_KEY ? [process.env.DEPLOYER_KEY] : []
     },
+    mumbai: {
+      network: 80001,
+      url: process.env.RPC_URL || '',
+      accounts: process.env.DEPLOYER_KEY ? [process.env.DEPLOYER_KEY] : []
+    },
     mainnet: {
       network: 1,
       url: process.env.RPC_URL || '',
@@ -39,7 +44,8 @@ const config: HardhatUserConfig = {
   etherscan: {
     apiKey: {
       mainnet: process.env.ETHERSCAN_API_KEY ?? "",
-      goerli: process.env.ETHERSCAN_API_KEY ?? ""
+      goerli: process.env.ETHERSCAN_API_KEY ?? "",
+      polygonMumbai: process.env.ETHERSCAN_API_KEY ?? "",
     }
   }
 };
