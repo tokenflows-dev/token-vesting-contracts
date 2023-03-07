@@ -31,7 +31,7 @@ contract LinearVestingProjectUpgradeable is ManageableUpgradeable, ILinearVestin
      * @param _token Address of ERC20 token
      */
     function __LinearVestingProject_initialize(address _token) external initializer {
-        __ManageableUpgradeable_init(msg.sender);
+        __ManageableUpgradeable_init();
 
         require(
             _token != address(0),
@@ -50,7 +50,7 @@ contract LinearVestingProjectUpgradeable is ManageableUpgradeable, ILinearVestin
         string memory _name,
         uint256 _startTime,
         uint256 _vestingDuration
-    ) public override onlyManager {
+    ) public override onlyManager returns (uint256) {
         require(
             _startTime > 0 && _vestingDuration > 0,
             "LinearVestingProject::createPool: One of the time parameters is 0"
@@ -81,6 +81,7 @@ contract LinearVestingProjectUpgradeable is ManageableUpgradeable, ILinearVestin
         }));
 
         emit PoolAdded(pools.length.sub(1));
+        return pools.length.sub(1);
     }
 
     /**

@@ -1,18 +1,16 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
-import "./LinearVestingProjectUpgradeable.sol";
+import "../LinearVestingProjectUpgradeable.sol";
+import "./ILinearVestingProjectRemovableUpgradeable.sol";
 
-abstract contract LinearVestingProjectRemovableUpgradeable is LinearVestingProjectUpgradeable {
-
-    /// @notice Event emitted when the grant stakeholder is deleted
-    event GrantRemoved(uint indexed poolIndex, address indexed stakeHolderAddress);
+contract LinearVestingProjectRemovableUpgradeable is LinearVestingProjectUpgradeable, ILinearVestingProjectRemovableUpgradeable {
 
     /**
      * @notice Deletes a grant from a pool by Id, refunds the remaining tokens from a grant.
      * @param _address existing address from the investor which we want to delete
      */
-    function removeGrant(uint _poolIndex, address _address) external onlyManager {
+    function removeGrant(uint _poolIndex, address _address) external override onlyManager {
         Grant memory grant = grants[_poolIndex][_address];
         require(
             grant.amount > 0,
