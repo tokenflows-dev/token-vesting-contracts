@@ -80,7 +80,7 @@ contract LinearVestingProjectUpgradeable is ManageableUpgradeable, ILinearVestin
             grants: 0
         }));
 
-        emit PoolAdded(pools.length.sub(1));
+        emit PoolAdded(msg.sender, _name, _startTime, _startTime.add(_vestingDuration), _vestingDuration);
         return pools.length.sub(1);
     }
 
@@ -143,7 +143,7 @@ contract LinearVestingProjectUpgradeable is ManageableUpgradeable, ILinearVestin
                 perSecond: _amounts[i].div(pool.vestingDuration)
             });
             grants[_poolIndex][_recipients[i]] = grant;
-            emit GrantAdded(_poolIndex, _recipients[i], _amounts[i]);
+            emit GrantAdded(_poolIndex, msg.sender, _recipients[i], _amounts[i]);
         }
 
         pool.amount = pool.amount.add(amountSum);

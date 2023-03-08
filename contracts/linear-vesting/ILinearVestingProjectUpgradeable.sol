@@ -27,13 +27,13 @@ interface ILinearVestingProjectUpgradeable {
     }
 
     /// @notice Event emitted when a new pool is created
-    event PoolAdded(uint indexed poolIndex);
+    event PoolAdded(address createdBy, string name, uint startTime, uint endTime, uint vestingDuration);
 
     /// @notice Event emitted when a new grant is created
-    event GrantAdded(uint indexed poolIndex, address indexed recipient, uint256 indexed amount);
+    event GrantAdded(uint indexed poolIndex, address indexed addedBy, address indexed recipient, uint amount);
 
     /// @notice Event emitted when tokens are claimed by a recipient from a grant
-    event GrantClaimed(uint indexed poolIndex, address indexed recipient, uint indexed amountClaimed);
+    event GrantClaimed(uint indexed poolIndex, address indexed recipient, uint amountClaimed);
 
     /**
      * @notice Creates a new pool
