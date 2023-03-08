@@ -80,7 +80,7 @@ contract LinearVestingProjectUpgradeable is ManageableUpgradeable, ILinearVestin
             grants: 0
         }));
 
-        emit PoolAdded(msg.sender, _name, _startTime, _startTime.add(_vestingDuration), _vestingDuration);
+        emit PoolAdded(msg.sender, _name, _startTime, _startTime.add(_vestingDuration));
         return pools.length.sub(1);
     }
 

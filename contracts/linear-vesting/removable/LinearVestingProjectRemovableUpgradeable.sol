@@ -25,6 +25,6 @@ contract LinearVestingProjectRemovableUpgradeable is LinearVestingProjectUpgrade
             "LinearVestingProjectRemovable::removeGrant: transfer failed"
         );
 
-        emit GrantRemoved(_poolIndex, _address);
+        emit GrantRemoved(_poolIndex, msg.sender, _address);
     }
 }

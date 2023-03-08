@@ -10,7 +10,7 @@ import "../ILinearVestingProjectUpgradeable.sol";
 interface ILinearVestingProjectRemovableUpgradeable is ILinearVestingProjectUpgradeable {
 
     /// @notice Event emitted when the grant stakeholder is deleted
-    event GrantRemoved(uint indexed poolIndex, address indexed stakeHolderAddress);
+    event GrantRemoved(uint indexed poolIndex, address indexed removedBy, address indexed recipient);
 
     /**
      * @notice Deletes a grant from a pool by Id, refunds the remaining tokens from a grant.
