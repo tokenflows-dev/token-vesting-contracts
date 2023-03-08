@@ -14,7 +14,7 @@ async function main() {
     await deployedUpgrade.deployed()
 
     console.log('Linear Vesting Project deployed upgrade at', deployedUpgrade.address)
-:
+
     await beacon.upgradeTo(deployedUpgrade.address);
 
     console.log('Linear Vesting Project from factory', factory.address, ' upgraded to', deployedUpgrade.address)

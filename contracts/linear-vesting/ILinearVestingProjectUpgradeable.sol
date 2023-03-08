@@ -43,6 +43,13 @@ interface ILinearVestingProjectUpgradeable {
     function createPool(string memory _name, uint256 _startTime, uint256 _vestingDuration) external returns (uint256);
 
     /**
+     * @notice Creates a new pool
+     * @param _startTime starting time of the vesting period in timestamp format
+     * @param _vestingDuration duration time of the vesting period in timestamp format
+     */
+    function createPoolWithGrants(string memory _name, uint256 _startTime, uint256 _vestingDuration, address[] memory _recipients, uint256[] memory _amounts) external returns (uint256);
+
+    /**
      * @notice Add list of grants in batch.
      * @param _recipients list of addresses of the stakeholders
      * @param _amounts list of amounts to be assigned to the stakeholders

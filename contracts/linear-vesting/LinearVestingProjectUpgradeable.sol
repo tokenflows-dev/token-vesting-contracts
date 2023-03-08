@@ -84,6 +84,18 @@ contract LinearVestingProjectUpgradeable is ManageableUpgradeable, ILinearVestin
         return pools.length.sub(1);
     }
 
+    function createPoolWithGrants(
+        string memory _name,
+        uint256 _startTime,
+        uint256 _vestingDuration,
+        address[] memory _recipients,
+        uint256[] memory _amounts
+    ) public override onlyManager returns (uint) {
+        uint poolIndex = createPool(_name, _startTime, _vestingDuration);
+        addGrants(poolIndex, _recipients, _amounts);
+        return poolIndex;
+    }
+
     /**
      * @notice Add list of grants in batch.
      * @param _recipients list of addresses of the stakeholders
