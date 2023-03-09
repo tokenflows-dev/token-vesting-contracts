@@ -21,7 +21,7 @@ contract LinearVestingProjectRemovableUpgradeable is LinearVestingProjectUpgrade
         delete grant;
 
         require(
-            token.transferFrom(address(this), msg.sender, refund),
+            token.transfer(owner(), refund),
             "LinearVestingProjectRemovable::removeGrant: transfer failed"
         );
 
