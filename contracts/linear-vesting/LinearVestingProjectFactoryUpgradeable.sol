@@ -19,7 +19,8 @@ contract LinearVestingProjectFactoryUpgradeable is OwnableUpgradeable {
     event ProjectCreated(
         uint indexed index,
         address indexed projectAddress,
-        address indexed tokenAddress
+        address indexed tokenAddress,
+        string name
     );
 
     function __LinearVestingProjectFactory_initialize(address _initBlueprint) public initializer onlyInitializing {
@@ -32,7 +33,8 @@ contract LinearVestingProjectFactoryUpgradeable is OwnableUpgradeable {
     }
 
     function createProject(
-        address _token
+        address _token,
+        string calldata _name
     ) external onlyOwner returns (address) {
         BeaconProxy project = new BeaconProxy(
             address(beacon),
@@ -48,7 +50,8 @@ contract LinearVestingProjectFactoryUpgradeable is OwnableUpgradeable {
         emit ProjectCreated(
             projectsCount,
             newProjectAddress,
-            _token
+            _token,
+            _name
         );
 
         return newProjectAddress;
