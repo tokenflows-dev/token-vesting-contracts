@@ -15,7 +15,7 @@ async function deployProjectFactory() {
   const erc20 = await ERC20.deploy();
   await erc20.deployed();
 
-  const tx = await projectFactory.createProject(erc20.address)
+  const tx = await projectFactory.createProject(erc20.address, 'Project Example')
   await tx.wait(1)
 
   const address = await projectFactory.getProjectAddress(0)
