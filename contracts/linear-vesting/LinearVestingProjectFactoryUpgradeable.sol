@@ -35,7 +35,7 @@ contract LinearVestingProjectFactoryUpgradeable is OwnableUpgradeable {
     function createProject(
         address _token,
         string calldata _name
-    ) external onlyOwner returns (address) {
+    ) external returns (address) {
         BeaconProxy project = new BeaconProxy(
             address(beacon),
             abi.encodeWithSelector(
