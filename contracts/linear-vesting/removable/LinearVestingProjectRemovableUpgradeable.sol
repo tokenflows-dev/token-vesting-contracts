@@ -18,7 +18,7 @@ contract LinearVestingProjectRemovableUpgradeable is LinearVestingProjectUpgrade
         );
 
         uint256 refund = grant.amount - grant.totalClaimed;
-        delete grant;
+        delete grants[_poolIndex][_address];
 
         require(
             token.transfer(owner(), refund),
