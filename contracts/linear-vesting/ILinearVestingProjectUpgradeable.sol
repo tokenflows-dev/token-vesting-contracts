@@ -94,6 +94,13 @@ interface ILinearVestingProjectUpgradeable {
     function claimVestedTokens(uint _poolIndex) external;
 
     /**
+     * @notice Allows a grant recipient to claim multiple vested tokens
+     * @dev Errors if no tokens have vested
+     * @dev It is advised recipients check they are entitled to claim via `calculateGrantClaim` before calling this
+     */
+    function claimMultiplePools(uint[] memory _poolIndexes) external;
+
+    /**
      * @notice Calculate the number of tokens that will vest per day for the given recipient
      * @param _recipient The address that has a grant
      * @return Number of tokens that will vest per day

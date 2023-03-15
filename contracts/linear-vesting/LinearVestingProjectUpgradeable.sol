@@ -260,11 +260,22 @@ contract LinearVestingProjectUpgradeable is ManageableUpgradeable, ILinearVestin
     }
 
     /**
+     * @notice Allows a grant recipient to claim multiple vested tokens
+     * @dev Errors if no tokens have vested
+     * @dev It is advised recipients check they are entitled to claim via `calculateGrantClaim` before calling this
+     */
+    function claimMultiplePools(uint[] memory _poolIndexes) external override {
+        for (uint i = 0; i < _poolIndexes.length; i++) {
+            claimVestedTokens(_poolIndexes[i]);
+        }
+    }
+
+    /**
      * @notice Allows a grant recipient to claim their vested tokens
      * @dev Errors if no tokens have vested
      * @dev It is advised recipients check they are entitled to claim via `calculateGrantClaim` before calling this
      */
-    function claimVestedTokens(uint _poolIndex) external override {
+    function claimVestedTokens(uint _poolIndex) public override {
         require(
             _poolIndex < pools.length,
             "LinearVestingProject::calculateGrantClaim: invalid pool index"
