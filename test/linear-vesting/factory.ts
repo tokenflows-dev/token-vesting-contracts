@@ -1,6 +1,8 @@
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import { expect } from "chai";
 import {deployProjectFactory} from "./util/fixtures";
+import {ethers, upgrades} from "hardhat";
+import {BigNumber} from "ethers";
 
 describe("Factory", function () {
 
@@ -11,22 +13,26 @@ describe("Factory", function () {
   });
 
   it("deploy factory should succeed", async function () {
+    const LinearVestingProjectRemovableUpgradeable = await ethers.getContractFactory("LinearVestingProjectRemovableUpgradeable");
+    const LinearVestingProjectFactoryUpgradeable = await ethers.getContractFactory("LinearVestingProjectFactoryUpgradeable");
 
+    const projectBase = await LinearVestingProjectRemovableUpgradeable.connect(owner).deploy();
+
+    const projectFactory = await upgrades.deployProxy(LinearVestingProjectFactoryUpgradeable, [projectBase.address], { initializer: '__LinearVestingProjectFactory_initialize' });
+    await projectFactory.deployed()
   });
 
   it("create new project should succeed", async function () {
-    // todo check if event has been emitted
+    expect(await projectFactory.projectsCount()).to.equal(BigNumber.from(0));
+
+    await expect(
+        projectFactory.createProject(erc20.address, 'Project Example')
+    ).to.emit(projectFactory, "ProjectCreated")
+
+    expect(await projectFactory.projectsCount()).to.equal(BigNumber.from(1));
   });
 
-  it("create project should fail if token address is not ERC20", async function () {
-
-  });
-
-  it("not owner shouldn't be able to create new projects", async function () {
-
-  });
-
-  it("upgrade beacon should succeed", async function () {
+  it.skip("upgrade beacon should succeed", async function () {
 
   });
 });
