@@ -26,7 +26,7 @@ describe("Factory", function () {
     expect(await projectFactory.projectsCount()).to.equal(BigNumber.from(0));
 
     await expect(
-        projectFactory.createProject(erc20.address, 'Project Example')
+        projectFactory.createProject(erc20.address, 'Project Example', 'asd')
     ).to.emit(projectFactory, "ProjectCreated")
 
     expect(await projectFactory.projectsCount()).to.equal(BigNumber.from(1));

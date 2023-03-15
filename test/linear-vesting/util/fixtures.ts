@@ -28,7 +28,7 @@ async function deployProjectFactoryWithProject() {
   const LinearVestingProjectRemovableUpgradeable = await ethers.getContractFactory("LinearVestingProjectRemovableUpgradeable");
 
 
-  const tx = await projectFactory.createProject(erc20.address, 'Project Example')
+  const tx = await projectFactory.createProject(erc20.address, 'Project Example', 'asd')
   await tx.wait(1)
 
   const address = await projectFactory.getProjectAddress(0)

@@ -26,11 +26,14 @@ contract LinearVestingProjectUpgradeable is ManageableUpgradeable, ILinearVestin
     /// @notice Mapping of recipient address > token grant
     mapping(uint => mapping(address => Grant)) public grants;
 
+    /// @dev metadata url
+    string metadataUrl;
+
     /**
      * @notice Construct a new Vesting contract
      * @param _token Address of ERC20 token
      */
-    function __LinearVestingProject_initialize(address _token) external initializer {
+    function __LinearVestingProject_initialize(address _token, string calldata _metadataUrl) external initializer {
         __ManageableUpgradeable_init();
 
         require(
@@ -39,6 +42,7 @@ contract LinearVestingProjectUpgradeable is ManageableUpgradeable, ILinearVestin
         );
 
         token = IERC20Upgradeable(_token);
+        metadataUrl = _metadataUrl;
     }
 
     /**
@@ -310,5 +314,9 @@ contract LinearVestingProjectUpgradeable is ManageableUpgradeable, ILinearVestin
         return _amount.div(pool.vestingDuration.div(SECONDS_PER_DAY));
     }
 
-    uint256[50] private __gap;
+    function setMetadataUrl(string calldata _metadataUrl) external onlyManager {
+        metadataUrl = _metadataUrl;
+    }
+
+    uint256[49] private __gap;
 }
