@@ -15,6 +15,11 @@ const config: HardhatUserConfig = {
       url: process.env.RPC_URL || '',
       accounts: process.env.DEPLOYER_KEY ? [process.env.DEPLOYER_KEY] : []
     },
+    sepolia: {
+      network: 11155111,
+      url: process.env.RPC_URL || '',
+      accounts: process.env.DEPLOYER_KEY ? [process.env.DEPLOYER_KEY] : []
+    },
     mumbai: {
       network: 80001,
       url: process.env.RPC_URL || '',
