@@ -35,6 +35,9 @@ interface ILinearVestingProjectUpgradeable {
     /// @notice Event emitted when tokens are claimed by a recipient from a grant
     event GrantClaimed(uint indexed poolIndex, address indexed recipient, uint amountClaimed);
 
+    /// @notice Event emitted when metadata url is changed
+    event MetadataUrlChanged(address indexed changedBy, string metadataUrl);
+
     /**
      * @notice Creates a new pool
      * @param _startTime starting time of the vesting period in timestamp format
@@ -57,34 +60,12 @@ interface ILinearVestingProjectUpgradeable {
     function addGrants(uint _poolIndex, address[] memory _recipients, uint256[] memory _amounts) external;
 
     /**
-     * @notice Get token grant for recipient
-     * @param _poolIndex The pool index
-     * @param _recipient The address that has a grant
-     * @return the grant
-     */
-    function getTokenGrant(uint _poolIndex, address _recipient) external view returns (Grant memory);
-
-    /**
      * @notice Calculate the vested and unclaimed tokens available for `recipient` to claim
      * @dev Due to rounding errors once grant duration is reached, returns the entire left grant amount
      * @param _recipient The address that has a grant
      * @return The amount recipient can claim
      */
     function calculateGrantClaim(uint _poolIndex, address _recipient) external view returns (uint256);
-
-    /**
-     * @notice Calculate the vested (claimed + unclaimed) tokens for `recipient`
-     * @param _recipient The address that has a grant
-     * @return Total vested balance (claimed + unclaimed)
-     */
-    function vestedBalance(uint _poolIndex, address _recipient) external view returns (uint256);
-
-    /**
-     * @notice The balance claimed by `recipient`
-     * @param _recipient The address that has a grant
-     * @return the number of claimed tokens by `recipient`
-     */
-    function claimedBalance(uint _poolIndex, address _recipient) external view returns (uint256);
 
     /**
      * @notice Allows a grant recipient to claim their vested tokens
@@ -100,17 +81,5 @@ interface ILinearVestingProjectUpgradeable {
      */
     function claimMultiplePools(uint[] memory _poolIndexes) external;
 
-    /**
-     * @notice Calculate the number of tokens that will vest per day for the given recipient
-     * @param _recipient The address that has a grant
-     * @return Number of tokens that will vest per day
-     */
-    function tokensVestedPerDay(uint _poolIndex, address _recipient) external view returns (uint256);
-
-    /**
-     * @notice Calculate the number of tokens that will vest per day in the given period for an amount
-     * @param _amount the amount to be checked
-     * @return Number of tokens that will vest per day
-     */
-    function calculatePoolVesting(uint _poolIndex, uint256 _amount) external view returns (uint256);
+    function setMetadataUrl(string memory _metadata) external;
 }

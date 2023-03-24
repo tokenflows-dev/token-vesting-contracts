@@ -48,7 +48,6 @@ contract LinearVestingProjectFactoryUpgradeable is OwnableUpgradeable {
         );
         address newProjectAddress = address(project);
         projects.push(newProjectAddress);
-        projectsCount++;
 
         emit ProjectCreated(
             projectsCount,
@@ -57,6 +56,7 @@ contract LinearVestingProjectFactoryUpgradeable is OwnableUpgradeable {
             _name,
             _metadataUrl
         );
+        projectsCount++;
 
         return newProjectAddress;
     }

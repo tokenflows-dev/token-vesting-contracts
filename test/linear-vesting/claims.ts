@@ -19,8 +19,8 @@ describe("Claims", function () {
         project.connect(user1).claimVestedTokens(0)
     ).to.emit(project, "GrantClaimed").withArgs(0, user1.address, amount.div(2))
 
-    expect(await project.claimedBalance(0, user1.address)).to.equal(amount.div(2));
-    expect(await project.vestedBalance(0, user1.address)).to.equal(amount.div(2));
+    const grant = await project.grants(0, user1.address)
+    expect(grant.totalClaimed).to.equal(amount.div(2));
   });
 
   it("invalid pool index should fail", async function () {

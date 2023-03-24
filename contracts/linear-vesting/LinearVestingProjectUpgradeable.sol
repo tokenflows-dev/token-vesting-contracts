@@ -167,16 +167,6 @@ contract LinearVestingProjectUpgradeable is ManageableUpgradeable, ILinearVestin
     }
 
     /**
-     * @notice Get token grant for recipient
-     * @param _poolIndex The pool index
-     * @param _recipient The address that has a grant
-     * @return the grant
-     */
-    function getTokenGrant(uint _poolIndex, address _recipient) external view override returns (Grant memory) {
-        return grants[_poolIndex][_recipient];
-    }
-
-    /**
      * @notice Calculate the vested and unclaimed tokens available for `recipient` to claim
      * @dev Due to rounding errors once grant duration is reached, returns the entire left grant amount
      * @param _recipient The address that has a grant
@@ -214,49 +204,6 @@ contract LinearVestingProjectUpgradeable is ManageableUpgradeable, ILinearVestin
             );
             return claimableAmount;
         }
-    }
-
-    /**
-     * @notice Calculate the vested (claimed + unclaimed) tokens for `recipient`
-     * @param _recipient The address that has a grant
-     * @return Total vested balance (claimed + unclaimed)
-     */
-    function vestedBalance(uint _poolIndex, address _recipient) external view override returns (uint256) {
-        require(
-            _poolIndex < pools.length,
-            "LinearVestingProject::calculateGrantClaim: invalid pool index"
-        );
-        Pool memory pool = pools[_poolIndex];
-
-        // For grants created with a future start date, that hasn't been reached, return 0, 0
-        if (block.timestamp < pool.startTime) {
-            return 0;
-        }
-
-        uint256 cap = block.timestamp;
-        if (cap > pool.endTime) {
-            cap = pool.endTime;
-        }
-
-        // If over vesting duration, all tokens vested
-        if (cap == pool.endTime) {
-            return grants[_poolIndex][_recipient].amount;
-        } else {
-            uint256 elapsedTime = cap.sub(pool.startTime);
-            uint256 amountVested = grants[_poolIndex][_recipient].perSecond.mul(
-                elapsedTime
-            );
-            return amountVested;
-        }
-    }
-
-    /**
-     * @notice The balance claimed by `recipient`
-     * @param _recipient The address that has a grant
-     * @return the number of claimed tokens by `recipient`
-     */
-    function claimedBalance(uint _poolIndex, address _recipient) external view override returns (uint256) {
-        return grants[_poolIndex][_recipient].totalClaimed;
     }
 
     /**
@@ -302,31 +249,9 @@ contract LinearVestingProjectUpgradeable is ManageableUpgradeable, ILinearVestin
         emit GrantClaimed(_poolIndex, msg.sender, amountVested);
     }
 
-    /**
-     * @notice Calculate the number of tokens that will vest per day for the given recipient
-     * @param _recipient The address that has a grant
-     * @return Number of tokens that will vest per day
-     */
-    function tokensVestedPerDay(uint _poolIndex, address _recipient) external view override returns (uint256){
-        return calculatePoolVesting(_poolIndex, grants[_poolIndex][_recipient].amount);
-    }
-
-    /**
-     * @notice Calculate the number of tokens that will vest per day in the given period for an amount
-     * @param _amount the amount to be checked
-     * @return Number of tokens that will vest per day
-     */
-    function calculatePoolVesting(uint _poolIndex, uint256 _amount) public view override returns (uint256) {
-        require(
-            _poolIndex < pools.length,
-            "LinearVestingProject::calculateGrantClaim: invalid pool index"
-        );
-        Pool memory pool = pools[_poolIndex];
-        return _amount.div(pool.vestingDuration.div(SECONDS_PER_DAY));
-    }
-
-    function setMetadataUrl(string calldata _metadataUrl) external onlyManager {
+    function setMetadataUrl(string calldata _metadataUrl) external override onlyManager {
         metadataUrl = _metadataUrl;
+        emit MetadataUrlChanged(msg.sender, _metadataUrl);
     }
 
     uint256[49] private __gap;

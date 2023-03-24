@@ -17,19 +17,21 @@ describe("Claims calculation", function () {
     const nextTs = startingPeriodTime + (poolVestingTime / 2); // elapsed half-time
     await setNextBlockTimestamp(nextTs);
 
-    const claimTx = await project.connect(user1).claimVestedTokens(0)
+    let claimTx = await project.connect(user1).claimVestedTokens(0)
     await claimTx.wait()
 
-    expect(await project.claimedBalance(0, user1.address)).to.equal(amount.div(2));
-    expect(await project.vestedBalance(0, user1.address)).to.equal(amount.div(2));
+    let grant = await project.grants(0, user1.address)
+    expect(grant.totalClaimed).to.equal(amount.div(2));
 
     const finalTs = nextTs + (poolVestingTime / 4); // elapsed
-    await setNextBlockTimestamp(finalTs);
+    await setNextBlockTimestamp(finalTs - 1); // last second was already claimed --
 
     await mine()
 
-    expect(await project.claimedBalance(0, user1.address)).to.equal(amount.div(2));
-    expect(await project.vestedBalance(0, user1.address)).to.equal(amount.mul(3).div(4));
+    claimTx = await project.connect(user1).claimVestedTokens(0)
+    await claimTx.wait()
+    grant = await project.grants(0, user1.address)
+    expect(grant.totalClaimed).to.equal(amount.mul(3).div(4));
   });
 
   it("claimable balance calculation", async function () {
