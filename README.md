@@ -1,4 +1,6 @@
 # Token Linear vesting smart contracts
+![Tests](https://github.com/dandelionlabs-io/token-vesting-contracts/actions/workflows/run_tests.yml/badge.svg)
+
 This repository contains the smart contracts for the Token Linear Vesting project. This set of contracts has been created to automate the vesting process after any ERC20 crowdsale that requires linear vesting.
 
 ## About the source code
