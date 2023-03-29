@@ -1,4 +1,4 @@
-name: Check tests routine
+name: Tests
 on:
   push:
     branches: [master]
