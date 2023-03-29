@@ -29,7 +29,7 @@ describe("Pools creation", function () {
 
     await expect(
         project.createPoolWithGrants(poolName, startingPeriodTime, poolVestingTime, [user1.address], [amount])
-    ).to.emit(project, "PoolAdded").withArgs(owner.address, poolName, startingPeriodTime, startingPeriodTime + poolVestingTime)
+    ).to.emit(project, "PoolAdded").withArgs(0, owner.address, poolName, startingPeriodTime, startingPeriodTime + poolVestingTime)
   });
 
   it("create pool without grants should work for manager", async function () {
@@ -38,7 +38,7 @@ describe("Pools creation", function () {
     let startingPeriodTime = currentTimeStamp + 100
     await expect(
         project.createPool(poolName, startingPeriodTime, poolVestingTime)
-    ).to.emit(project, "PoolAdded").withArgs(owner.address, poolName, startingPeriodTime, startingPeriodTime + poolVestingTime)
+    ).to.emit(project, "PoolAdded").withArgs(0, owner.address, poolName, startingPeriodTime, startingPeriodTime + poolVestingTime)
   });
 
   it("user without manager role create pool should fail", async function () {
