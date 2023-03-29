@@ -4,7 +4,8 @@
   "description": "Token Linear Vesting Smart Contracts developed for ERC20 crowdsales IDOs and token distribution events.",
   "main": "scripts/deploy.ts",
   "scripts": {
-    "deploy": "npx hardhat run scripts/deploy.ts --network mainnet",
+    "deploy": "npx hardhat run scripts/deploy.ts --network sepolia",
+    "deploy:UserRegistry": "npx hardhat run scripts/deploy-user-registry.ts --network sepolia",
     "test": "npx hardhat test"
   },
   "repository": {
