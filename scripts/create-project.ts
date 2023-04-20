@@ -1,4 +1,4 @@
-import { ethers } from "hardhat";
+import {ethers} from "hardhat";
 
 async function main() {
 
@@ -6,7 +6,7 @@ async function main() {
 
     const factory = LinearVestingProjectFactoryUpgradeable.attach(process.env.EXISTING_FACTORY)
 
-    const tx = await factory.createProject(process.env.EXISTING_TOKEN)
+    const tx = await factory.createProject(process.env.EXISTING_TOKEN, 'Dandelion Labs Test 2', 'https://ipfs.io/ipfs/QmRnuKeoL9qFShGYb8n2fHi9YADq9HxaBBy2og7mx7PbhE')
 
     await tx.wait(1)
 

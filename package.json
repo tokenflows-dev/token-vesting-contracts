@@ -1,7 +1,7 @@
 {
-  "name": "linear-vesting-contracts",
+  "name": "tokenflows-contracts",
   "version": "1.0.0",
-  "description": "Token Linear Vesting Smart Contracts developed for ERC20 crowdsales IDOs and token distribution events.",
+  "description": "TokenFlows Smart Contracts.",
   "main": "scripts/deploy.ts",
   "scripts": {
     "deploy": "npx hardhat run scripts/deploy.ts --network sepolia",
@@ -10,18 +10,19 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dandelionlabs-io/linear-vesting-contracts.git"
+    "url": "git+https://github.com/dandelionlabs-io/tokenflows-contracts.git"
   },
   "keywords": [
     "token-vesting",
-    "dandelionlabs"
+    "dandelionlabs",
+    "tokenflows"
   ],
   "author": "Dandelion Labs (hello@dandelionlabs.io)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/dandelionlabs-io/linear-vesting-contracts/issues"
+    "url": "https://github.com/dandelionlabs-io/tokenflows-contracts/issues"
   },
-  "homepage": "https://github.com/dandelionlabs-io/linear-vesting-contracts#readme",
+  "homepage": "https://github.com/dandelionlabs-io/tokenflows-contracts#readme",
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.2",
     "@nomiclabs/hardhat-etherscan": "^3.1.7",

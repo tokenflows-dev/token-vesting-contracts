@@ -27,7 +27,7 @@ contract LinearVestingProjectUpgradeable is ManageableUpgradeable, ILinearVestin
     mapping(uint => mapping(address => Grant)) public grants;
 
     /// @dev metadata url
-    string metadataUrl;
+    string public metadataUrl;
 
     /**
      * @notice Construct a new Vesting contract

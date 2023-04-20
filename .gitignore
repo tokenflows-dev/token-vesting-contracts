@@ -6,3 +6,5 @@ artifacts
 typechain-types
 remix-compiler.config.js
 .openzeppelin
+migrations
+build/

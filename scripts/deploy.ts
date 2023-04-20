@@ -4,10 +4,11 @@ require('dotenv').config()
 
 async function main() {
 
-    const LinearVestingProjectUpgradeable = await ethers.getContractFactory("LinearVestingProjectUpgradeable");
+    const LinearVestingProjectRemovableUpgradeable = await ethers.getContractFactory("LinearVestingProjectRemovableUpgradeable");
     const LinearVestingProjectFactoryUpgradeable = await ethers.getContractFactory("LinearVestingProjectFactoryUpgradeable");
 
-    const projectBase = await LinearVestingProjectUpgradeable.deploy();
+    const projectBase = await LinearVestingProjectRemovableUpgradeable.deploy();
+    await projectBase.deployed()
 
     console.log("Vesting Project for beacon proxy deployed to:", projectBase.address);
 
