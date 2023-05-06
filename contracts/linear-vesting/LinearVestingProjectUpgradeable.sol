@@ -11,7 +11,10 @@ import "./ILinearVestingProjectUpgradeable.sol";
  * @dev Linear Vesting project for linear vesting grants distribution.
  * Taken from https://github.com/dandelionlabs-io/linear-vesting-contracts/blob/master/contracts/LinearVestingProjectUpgradeable.sol
  */
-contract LinearVestingProjectUpgradeable is ManageableUpgradeable, ILinearVestingProjectUpgradeable {
+contract LinearVestingProjectUpgradeable is
+    ManageableUpgradeable,
+    ILinearVestingProjectUpgradeable
+{
     using SafeMathUpgradeable for uint;
 
     /// @dev Used to translate vesting periods specified in days to seconds
@@ -33,7 +36,10 @@ contract LinearVestingProjectUpgradeable is ManageableUpgradeable, ILinearVestin
      * @notice Construct a new Vesting contract
      * @param _token Address of ERC20 token
      */
-    function __LinearVestingProject_initialize(address _token, string calldata _metadataUrl) external initializer {
+    function __LinearVestingProject_initialize(
+        address _token,
+        string calldata _metadataUrl
+    ) external initializer {
         __ManageableUpgradeable_init();
 
         require(
@@ -51,7 +57,8 @@ contract LinearVestingProjectUpgradeable is ManageableUpgradeable, ILinearVestin
      * @param _vestingDuration duration time of the vesting period in timestamp format
      */
     function createPool(
-        string memory _name,
+        address _token,
+        string memory _metadataUrl,
         uint256 _startTime,
         uint256 _vestingDuration
     ) public override onlyManager returns (uint256) {
@@ -74,28 +81,44 @@ contract LinearVestingProjectUpgradeable is ManageableUpgradeable, ILinearVestin
             );
         }
 
-        pools.push(Pool({
-            name: _name,
-            startTime: _startTime,
-            vestingDuration: _vestingDuration,
-            endTime: _startTime.add(_vestingDuration),
-            amount: 0,
-            totalClaimed: 0,
-            grants: 0
-        }));
+        pools.push(
+            Pool({
+                token: _token,
+                metadataUrl: _metadataUrl,
+                startTime: _startTime,
+                vestingDuration: _vestingDuration,
+                endTime: _startTime.add(_vestingDuration),
+                amount: 0,
+                totalClaimed: 0,
+                grants: 0
+            })
+        );
 
-        emit PoolAdded(pools.length.sub(1), msg.sender, _name, _startTime, _startTime.add(_vestingDuration));
+        emit PoolAdded(
+            _token,
+            _metadataUrl,
+            pools.length.sub(1),
+            msg.sender,
+            _startTime,
+            _startTime.add(_vestingDuration)
+        );
         return pools.length.sub(1);
     }
 
     function createPoolWithGrants(
-        string memory _name,
+        address _token,
+        string memory _metadataUrl,
         uint256 _startTime,
         uint256 _vestingDuration,
         address[] memory _recipients,
         uint256[] memory _amounts
     ) public override onlyManager returns (uint) {
-        uint poolIndex = createPool(_name, _startTime, _vestingDuration);
+        uint poolIndex = createPool(
+            _token,
+            _metadataUrl,
+            _startTime,
+            _vestingDuration
+        );
         addGrants(poolIndex, _recipients, _amounts);
         return poolIndex;
     }
@@ -159,7 +182,12 @@ contract LinearVestingProjectUpgradeable is ManageableUpgradeable, ILinearVestin
                 perSecond: _amounts[i].div(pool.vestingDuration)
             });
             grants[_poolIndex][_recipients[i]] = grant;
-            emit GrantAdded(_poolIndex, msg.sender, _recipients[i], _amounts[i]);
+            emit GrantAdded(
+                _poolIndex,
+                msg.sender,
+                _recipients[i],
+                _amounts[i]
+            );
         }
 
         pool.amount = pool.amount.add(amountSum);
@@ -172,7 +200,10 @@ contract LinearVestingProjectUpgradeable is ManageableUpgradeable, ILinearVestin
      * @param _recipient The address that has a grant
      * @return The amount recipient can claim
      */
-    function calculateGrantClaim(uint _poolIndex, address _recipient) public view override returns (uint256) {
+    function calculateGrantClaim(
+        uint _poolIndex,
+        address _recipient
+    ) public view override returns (uint256) {
         require(
             _poolIndex < pools.length,
             "LinearVestingProject::calculateGrantClaim: invalid pool index"
@@ -241,15 +272,15 @@ contract LinearVestingProjectUpgradeable is ManageableUpgradeable, ILinearVestin
 
         Grant storage grant = grants[_poolIndex][msg.sender];
 
-        grant.totalClaimed = uint256(
-            grant.totalClaimed.add(amountVested)
-        );
+        grant.totalClaimed = uint256(grant.totalClaimed.add(amountVested));
         pool.totalClaimed = pool.totalClaimed.add(amountVested);
 
         emit GrantClaimed(_poolIndex, msg.sender, amountVested);
     }
 
-    function setMetadataUrl(string calldata _metadataUrl) external override onlyManager {
+    function setMetadataUrl(
+        string calldata _metadataUrl
+    ) external override onlyManager {
         metadataUrl = _metadataUrl;
         emit MetadataUrlChanged(msg.sender, _metadataUrl);
     }
