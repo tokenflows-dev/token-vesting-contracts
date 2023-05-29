@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
-import "../ITestLinearVestingProjectUpgradeable.sol";
+import "../ILinearVestingProjectUpgradeable.sol";
 
 /**
  * @title ILinearVestingProjectRemovableUpgradeable interface
@@ -8,7 +8,7 @@ import "../ITestLinearVestingProjectUpgradeable.sol";
  * Taken from https://github.com/dandelionlabs-io/linear-vesting-contracts/blob/master/contracts/linear-vesting/ILinearVestingProjectRemovableUpgradeable.sol
  */
 interface ILinearVestingProjectRemovableUpgradeable is
-    ITestLinearVestingProjectUpgradeable
+    ILinearVestingProjectUpgradeable
 {
     /// @notice Event emitted when the grant stakeholder is deleted
     event GrantRemoved(

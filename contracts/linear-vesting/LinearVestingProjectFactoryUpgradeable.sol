@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts/proxy/beacon/BeaconProxy.sol";
 
-import "./TestLinearVestingProjectUpgradeable.sol";
+import "./LinearVestingProjectUpgradeable.sol";
 import "./LinearVestingProjectBeacon.sol";
 
 contract LinearVestingProjectFactoryUpgradeable is OwnableUpgradeable {
@@ -44,7 +44,7 @@ contract LinearVestingProjectFactoryUpgradeable is OwnableUpgradeable {
         BeaconProxy project = new BeaconProxy(
             address(beacon),
             abi.encodeWithSelector(
-                TestLinearVestingProjectUpgradeable(address(0))
+                LinearVestingProjectUpgradeable(address(0))
                     .__LinearVestingProject_initialize
                     .selector,
                 _token,

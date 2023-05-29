@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
-import "../TestLinearVestingProjectUpgradeable.sol";
+import "../LinearVestingProjectUpgradeable.sol";
 import "./ILinearVestingProjectRemovableUpgradeable.sol";
 
 contract LinearVestingProjectRemovableUpgradeable is
-    TestLinearVestingProjectUpgradeable,
+    LinearVestingProjectUpgradeable,
     ILinearVestingProjectRemovableUpgradeable
 {
     /**
