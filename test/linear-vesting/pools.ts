@@ -1,7 +1,7 @@
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import { expect } from "chai";
-import { deployProjectFactoryWithProject } from "./util/fixtures";
 import { BigNumber } from "ethers";
+import { deployProjectFactoryWithProject } from "./util/fixtures";
 import { getLastBlockTimestamp } from "./util/time";
 
 describe("Pools creation", function () {
@@ -29,7 +29,7 @@ describe("Pools creation", function () {
     let startingPeriodTime = currentTimeStamp + 100;
 
     await expect(
-      project.createPoolWithGrants(
+      project.createVestingScheduleWithGrants(
         token,
         poolName,
         startingPeriodTime,
@@ -38,7 +38,7 @@ describe("Pools creation", function () {
         [amount]
       )
     )
-      .to.emit(project, "PoolAdded")
+      .to.emit(project, "VestingScheduleAdded")
       .withArgs(
         token,
         poolName,
@@ -54,9 +54,14 @@ describe("Pools creation", function () {
     let startingPeriodTime = currentTimeStamp + 100;
     let token = erc20.address;
     await expect(
-      project.createPool(token, poolName, startingPeriodTime, poolVestingTime)
+      project.createVestingSchedule(
+        token,
+        poolName,
+        startingPeriodTime,
+        poolVestingTime
+      )
     )
-      .to.emit(project, "PoolAdded")
+      .to.emit(project, "VestingScheduleAdded")
       .withArgs(
         token,
         poolName,
@@ -76,7 +81,12 @@ describe("Pools creation", function () {
     await expect(
       project
         .connect(user1)
-        .createPool(token, poolName, startingPeriodTime, poolVestingTime)
+        .createVestingSchedule(
+          token,
+          poolName,
+          startingPeriodTime,
+          poolVestingTime
+        )
     ).to.rejectedWith(
       "ManageableUpgradeable::onlyManager: the caller is not an manager."
     );

@@ -63,9 +63,9 @@ async function deployProjectFactoryWithProjectAndPool() {
   const {
     projectFactory,
     projectBase,
-    owner,
     project,
     erc20,
+    owner,
     manager,
     user1,
     user2,
@@ -82,7 +82,7 @@ async function deployProjectFactoryWithProjectAndPool() {
 
   let startingPeriodTime = currentTimeStamp + 100;
 
-  let tx = await project.createPoolWithGrants(
+  let tx = await project.createVestingScheduleWithGrants(
     token,
     "Pool 1",
     startingPeriodTime,

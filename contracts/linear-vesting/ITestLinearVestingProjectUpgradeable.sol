@@ -6,9 +6,9 @@ pragma solidity ^0.8.4;
  * @dev Linear Vesting project for linear vesting grants distribution.
  * Taken from https://github.com/dandelionlabs-io/linear-vesting-contracts/blob/master/contracts/linear-vesting/ILinearVestingProjectUpgradeable.sol
  */
-interface ILinearVestingProjectUpgradeable {
+interface ITestLinearVestingProjectUpgradeable {
     /// @notice Pool definition
-    struct Pool {
+    struct VestingSchedule {
         address token;
         string metadataUrl; // Name of the pool
         uint startTime; // Starting time of the vesting period in unix timestamp format
@@ -27,7 +27,7 @@ interface ILinearVestingProjectUpgradeable {
     }
 
     /// @notice Event emitted when a new pool is created
-    event PoolAdded(
+    event VestingScheduleAdded(
         address token,
         string metadataUrl,
         uint indexed index,
@@ -38,7 +38,7 @@ interface ILinearVestingProjectUpgradeable {
 
     /// @notice Event emitted when a new grant is created
     event GrantAdded(
-        uint indexed poolIndex,
+        uint indexed vestingIndex,
         address indexed addedBy,
         address indexed recipient,
         uint amount
@@ -46,7 +46,7 @@ interface ILinearVestingProjectUpgradeable {
 
     /// @notice Event emitted when tokens are claimed by a recipient from a grant
     event GrantClaimed(
-        uint indexed poolIndex,
+        uint indexed vestingIndex,
         address indexed recipient,
         uint amountClaimed
     );
@@ -59,7 +59,7 @@ interface ILinearVestingProjectUpgradeable {
      * @param _startTime starting time of the vesting period in timestamp format
      * @param _vestingDuration duration time of the vesting period in timestamp format
      */
-    function createPool(
+    function createVestingSchedule(
         address token,
         string memory _metadataUrl,
         uint256 _startTime,
@@ -71,7 +71,7 @@ interface ILinearVestingProjectUpgradeable {
      * @param _startTime starting time of the vesting period in timestamp format
      * @param _vestingDuration duration time of the vesting period in timestamp format
      */
-    function createPoolWithGrants(
+    function createVestingScheduleWithGrants(
         address token,
         string memory _metadataUrl,
         uint256 _startTime,
@@ -86,7 +86,7 @@ interface ILinearVestingProjectUpgradeable {
      * @param _amounts list of amounts to be assigned to the stakeholders
      */
     function addGrants(
-        uint _poolIndex,
+        uint _vestingIndex,
         address[] memory _recipients,
         uint256[] memory _amounts
     ) external;
@@ -98,7 +98,7 @@ interface ILinearVestingProjectUpgradeable {
      * @return The amount recipient can claim
      */
     function calculateGrantClaim(
-        uint _poolIndex,
+        uint _vestingIndex,
         address _recipient
     ) external view returns (uint256);
 
@@ -107,14 +107,14 @@ interface ILinearVestingProjectUpgradeable {
      * @dev Errors if no tokens have vested
      * @dev It is advised recipients check they are entitled to claim via `calculateGrantClaim` before calling this
      */
-    function claimVestedTokens(uint _poolIndex) external;
+    function claimVestedTokens(uint _vestingIndex) external;
 
     /**
      * @notice Allows a grant recipient to claim multiple vested tokens
      * @dev Errors if no tokens have vested
      * @dev It is advised recipients check they are entitled to claim via `calculateGrantClaim` before calling this
      */
-    function claimMultiplePools(uint[] memory _poolIndexes) external;
+    function claimMultipleVestings(uint[] memory _vestingIndexes) external;
 
     function setMetadataUrl(string memory _metadata) external;
 }
