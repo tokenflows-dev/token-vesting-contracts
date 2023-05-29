@@ -8,13 +8,12 @@ import "./LinearVestingProjectUpgradeable.sol";
 import "./LinearVestingProjectBeacon.sol";
 
 contract LinearVestingProjectFactoryUpgradeable is OwnableUpgradeable {
-
     address[] private projects;
     uint public projectsCount;
     LinearVestingProjectBeacon beacon;
 
     /**
-    * @dev Emitted when a new project is created.
+     * @dev Emitted when a new project is created.
      */
     event ProjectCreated(
         uint indexed index,
@@ -24,12 +23,16 @@ contract LinearVestingProjectFactoryUpgradeable is OwnableUpgradeable {
         string metadataUrl
     );
 
-    function __LinearVestingProjectFactory_initialize(address _initBlueprint) public initializer onlyInitializing {
+    function __LinearVestingProjectFactory_initialize(
+        address _initBlueprint
+    ) public initializer onlyInitializing {
         __Ownable_init();
         __LinearVestingProjectFactory_initialize_unchained(_initBlueprint);
     }
 
-    function __LinearVestingProjectFactory_initialize_unchained(address _initBlueprint) public onlyInitializing {
+    function __LinearVestingProjectFactory_initialize_unchained(
+        address _initBlueprint
+    ) public onlyInitializing {
         beacon = new LinearVestingProjectBeacon(_initBlueprint);
     }
 
@@ -41,7 +44,9 @@ contract LinearVestingProjectFactoryUpgradeable is OwnableUpgradeable {
         BeaconProxy project = new BeaconProxy(
             address(beacon),
             abi.encodeWithSelector(
-                LinearVestingProjectUpgradeable(address(0)).__LinearVestingProject_initialize.selector,
+                LinearVestingProjectUpgradeable(address(0))
+                    .__LinearVestingProject_initialize
+                    .selector,
                 _token,
                 _metadataUrl
             )
@@ -69,7 +74,9 @@ contract LinearVestingProjectFactoryUpgradeable is OwnableUpgradeable {
         return address(beacon);
     }
 
-    function getProjectAddress(uint projectIndex) external view returns (address) {
+    function getProjectAddress(
+        uint projectIndex
+    ) external view returns (address) {
         return projects[projectIndex];
     }
 

@@ -1,0 +1,74 @@
+<mxfile host="65bd71144e">
+    <diagram id="sQzRy38Rwz46Kst6u8R-" name="Page-1">
+        <mxGraphModel dx="1058" dy="833" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="28" style="edgeStyle=none;html=1;exitX=0;exitY=0.75;exitDx=0;exitDy=0;" parent="1" source="2" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="70" y="235.28571428571433" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="2" value="&lt;font style=&quot;background-color: rgb(1, 174, 249);&quot; color=&quot;#ffffff&quot;&gt;Forwarding function calls&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;strokeWidth=2;fillWeight=4;hachureGap=8;hachureAngle=45;fillColor=#1ba1e2;sketch=1;" parent="1" vertex="1">
+                    <mxGeometry x="190" y="190" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="3" value="Proxy Contract - fixed address" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="160" y="160" width="180" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="10" value="Implementation Contract - holds the contracts logic" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=12;" parent="1" vertex="1">
+                    <mxGeometry x="365" y="370" width="290" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="11" value="Implementation" style="ellipse;whiteSpace=wrap;html=1;strokeWidth=2;fillWeight=2;hachureGap=8;fillColor=#990000;fillStyle=dots;sketch=1;fontSize=12;" parent="1" vertex="1">
+                    <mxGeometry x="450" y="400" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="14" value="&lt;span style=&quot;background-color: rgb(26, 51, 0);&quot;&gt;Beacon&lt;/span&gt;" style="rhombus;whiteSpace=wrap;html=1;strokeWidth=2;fillWeight=-1;hachureGap=8;fillStyle=cross-hatch;fillColor=#60a917;sketch=1;labelBackgroundColor=#01aef9;fontSize=12;fontColor=#ffffff;strokeColor=#2D7600;" parent="1" vertex="1">
+                    <mxGeometry x="450" y="190" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="15" value="Beacon Contract &lt;br&gt;holds ref to implementation contract address" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=12;fontColor=#FFFFFF;" parent="1" vertex="1">
+                    <mxGeometry x="380" y="145" width="260" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="29" style="edgeStyle=none;html=1;entryX=-0.034;entryY=0.412;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="16" target="2" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="180" y="215" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="16" value="" style="shape=actor;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="25" y="185" width="40" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="17" value="User" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="20" y="145" width="50" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="20" value="" style="shape=singleArrow;whiteSpace=wrap;html=1;rotation=90;" parent="1" vertex="1">
+                    <mxGeometry x="460" y="300" width="100" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="21" value="" style="shape=doubleArrow;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="330" y="205" width="100" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="25" value="" style="edgeStyle=segmentEdgeStyle;endArrow=classic;html=1;curved=0;rounded=0;endSize=8;startSize=8;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" parent="1" source="2" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="250" y="260" as="sourcePoint"/>
+                        <mxPoint x="450" y="430" as="targetPoint"/>
+                        <Array as="points">
+                            <mxPoint x="250" y="430"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="26" value="&lt;span style=&quot;background-color: rgb(255, 0, 255);&quot;&gt;3) Proxy executes delegatecall()&lt;br&gt;&amp;nbsp;on Implementation&lt;/span&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="250" y="280" width="190" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="30" value="&lt;span style=&quot;background-color: rgb(255, 0, 255);&quot;&gt;1) Calls proxy&lt;/span&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="70" y="185" width="100" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="31" value="&lt;span style=&quot;background-color: rgb(255, 0, 255);&quot;&gt;4) Function return to user &lt;br&gt;after logic execution&lt;/span&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="50" y="245" width="160" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="32" value="&lt;span style=&quot;background-color: rgb(255, 0, 255);&quot;&gt;2) Proxy quaries beacon contract&lt;br&gt;for implementation&lt;/span&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="270" y="120" width="200" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="33" value="&lt;b&gt;&lt;font style=&quot;font-size: 22px;&quot;&gt;Upgrading contacts&lt;/font&gt;&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="210" y="50" width="230" height="40" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>
